@@ -50,7 +50,7 @@ namespace VagrantBuilder
             if (exists == true)
             {
                 DateTime date = DateTime.Now;
-                var newpathtobuild = pathtoBuild+" DUPE "+ + date.Month + date.Day + date.Second;
+                var newpathtobuild = pathtoBuild+" DUPE "+ date.Month + date.Day + date.Second + date.Millisecond;
                 Directory.CreateDirectory(newpathtobuild);
                 return newpathtobuild;
             }
@@ -65,13 +65,27 @@ namespace VagrantBuilder
         public void CloneBaseFIles(string unzipToPath)
         {
             var zippedfiles = Directory.GetCurrentDirectory() + @"\Content\Archive.zip";
-            zippedfiles = zippedfiles.Replace("Console", string.Empty);
+            //zippedfiles = zippedfiles.Replace("Console", string.Empty);
             var exists = System.IO.File.Exists(zippedfiles);
             System.IO.Compression.ZipFile.ExtractToDirectory(zippedfiles, unzipToPath);
 
         }
 
-        public bool UpdateDownloadStringInDecisionsAutoInstaller(string PathToRootOfBuildFolder, string BuildNumber)
+        public bool CheckHTTPURLExists (string URL)
+        {
+            try
+            {
+                GetReleases(URL);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
+        }
+
+        public bool UpdateDownloadStringInDecisionsAutoInstaller(string PathToRootOfBuildFolder, BuildListBuild BuildNumber)
         {
 
 
@@ -79,7 +93,17 @@ namespace VagrantBuilder
             {
                 var FileTochangeFullPath = PathToRootOfBuildFolder + @"\DecisionsInstaller\InstallerSetup.xml";
                 var filesContent = File.ReadAllText(FileTochangeFullPath);
-                filesContent = filesContent.Replace("<TxtAlternateURLSource>https://releases.decisions.com/releasedversions/60577</TxtAlternateURLSource>", "<TxtAlternateURLSource>https://releases.decisions.com/releasedversions/"+BuildNumber+"</TxtAlternateURLSource>");
+
+                if (BuildNumber.IsPublicallyReleased == true)
+                {
+                    filesContent = filesContent.Replace("<TxtAlternateURLSource>https://releases.decisions.com/releasedversions/60577</TxtAlternateURLSource>", "<TxtAlternateURLSource>https://releases.decisions.com/releasedversions/" + BuildNumber.SVNRevision + "</TxtAlternateURLSource>");
+
+                }
+
+                else
+                {
+                    filesContent = filesContent.Replace("<TxtAlternateURLSource>https://releases.decisions.com/releasedversions/60577</TxtAlternateURLSource>", "<TxtAlternateURLSource>http://releases.decisions.com/stagedversions/" + BuildNumber.SVNRevision + "</TxtAlternateURLSource>");
+                }
                 System.IO.File.WriteAllText(FileTochangeFullPath, filesContent);
                 return true;
             }

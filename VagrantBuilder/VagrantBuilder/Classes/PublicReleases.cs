@@ -43,7 +43,7 @@ namespace VagrantBuilder.Classes
 
         private string fullVersionField;
 
-        private ushort sVNRevisionField;
+        private string sVNRevisionField;
 
         private string pathField;
 
@@ -95,7 +95,7 @@ namespace VagrantBuilder.Classes
         }
 
         /// <remarks/>
-        public ushort SVNRevision
+        public string SVNRevision
         {
             get
             {
