@@ -17,6 +17,20 @@ namespace VagrantBuilderConsole
             {
 
 
+                try
+                {
+                    if (args[0].Contains(':'))
+                    {
+                        System.IO.File.WriteAllText("vagrantDrive.config", args[0]);
+                    }
+
+                }
+                catch (Exception ex2)
+                {
+                    //dont care
+                    
+                }
+
 
                 var xmlasstringPublic = new VagrantBuilder.VagrantBuilderClass().GetReleases("https://releases.decisions.com/releasedversions/PublicReleases.xml");
                 var xmlasstringStaged = new VagrantBuilder.VagrantBuilderClass().GetReleases("http://releases.decisions.com/stagedversions/StagedReleases.xml");
@@ -99,7 +113,17 @@ namespace VagrantBuilderConsole
 
                         if (geturlworkd == true)
                         {
-                            var makeddir = new VagrantBuilder.VagrantBuilderClass().MakeDir(buildNumber);
+                        var driveid = "c:";
+                            if (System.IO.File.Exists("vagrantDrive.config"))
+                            {
+                                driveid = System.IO.File.ReadAllText("vagrantDrive.config");
+                                if (string.IsNullOrEmpty(driveid))
+                                {
+                                driveid = "c:";
+                                }
+                            }
+
+                            var makeddir = new VagrantBuilder.VagrantBuilderClass().MakeDir(buildNumber, driveid);
                             new VagrantBuilder.VagrantBuilderClass().CloneBaseFIles(makeddir);
                             new VagrantBuilder.VagrantBuilderClass().UpdateDownloadStringInDecisionsAutoInstaller(makeddir, BuildItemToCreate);
 

@@ -42,9 +42,14 @@ namespace VagrantBuilder
             return _BuildList;
         }
 
-        public string MakeDir (string BuildNumber)
+        public string MakeDir (string BuildNumber, string DriveLetter)
         {
-            var defaultroot = @"C:\Vagrant\Decisions";
+            if (string.IsNullOrEmpty(DriveLetter))
+            {
+                DriveLetter = "c:";
+            }
+
+            var defaultroot = DriveLetter +  @"\Vagrant\Decisions";
             var pathtoBuild = defaultroot + BuildNumber;
             var exists = Directory.Exists(pathtoBuild);
             if (exists == true)
