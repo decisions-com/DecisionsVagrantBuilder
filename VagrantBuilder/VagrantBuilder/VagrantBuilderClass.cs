@@ -4,13 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using VagrantBuilder.Classes;
+using VagrantBuilderCore.Classes;
 
 
-namespace VagrantBuilder
+namespace VagrantBuilderCore
 {
     public class VagrantBuilderClass
     {
@@ -49,7 +50,24 @@ namespace VagrantBuilder
                 DriveLetter = "c:";
             }
 
-            var defaultroot = DriveLetter +  @"\Vagrant\Decisions";
+            if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                DriveLetter = "";
+            }
+
+
+
+
+            var defaultroot = "";
+            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                defaultroot = DriveLetter + @"\Vagrant\Decisions";
+            }
+            else
+            {
+                defaultroot = DriveLetter + @"Vagrant/Decisions";
+            }
+
             var pathtoBuild = defaultroot + BuildNumber;
             var exists = Directory.Exists(pathtoBuild);
             if (exists == true)
@@ -69,7 +87,15 @@ namespace VagrantBuilder
 
         public void CloneBaseFIles(string unzipToPath)
         {
-            var zippedfiles = Directory.GetCurrentDirectory() + @"\Content\Archive.zip";
+            var zippedfiles = "";
+            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                zippedfiles = Directory.GetCurrentDirectory() + @"\Content\Archive.zip";
+            }
+            else
+            {
+                zippedfiles = Directory.GetCurrentDirectory() + @"/Content/Archive.zip";
+            }
             //zippedfiles = zippedfiles.Replace("Console", string.Empty);
             var exists = System.IO.File.Exists(zippedfiles);
             System.IO.Compression.ZipFile.ExtractToDirectory(zippedfiles, unzipToPath);
@@ -96,7 +122,20 @@ namespace VagrantBuilder
 
             try
             {
-                var FileTochangeFullPath = PathToRootOfBuildFolder + @"\DecisionsInstaller\InstallerSetup.xml";
+                var FileTochangeFullPath = "";
+
+                if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    FileTochangeFullPath = PathToRootOfBuildFolder + @"\DecisionsInstaller\InstallerSetup.xml";
+                }
+                else
+                {
+
+                    FileTochangeFullPath = PathToRootOfBuildFolder + @"/DecisionsInstaller/InstallerSetup.xml";
+                }
+
+
+
                 var filesContent = File.ReadAllText(FileTochangeFullPath);
 
                 if (BuildNumber.IsPublicallyReleased == true)
