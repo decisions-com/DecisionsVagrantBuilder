@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WizardSetup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <InitialDataBaseType>MSSQL</InitialDataBaseType>
+   <ShowDetails>false</ShowDetails>
+   <AllowDynamicLoadingLocals>false</AllowDynamicLoadingLocals>
+   <CheckAdvancedSettings>true</CheckAdvancedSettings>
+   <ChangeSettingsOnUpdate>false</ChangeSettingsOnUpdate>
+   <CheckChangeDefaultSysAdmin>false</CheckChangeDefaultSysAdmin>
+   <CheckChangeDestFolder>false</CheckChangeDestFolder>
+   <CheckRedirect>false</CheckRedirect>
+   <InstallOnRoot>false</InstallOnRoot>
+   <ShowIIS8Warning>Visible</ShowIIS8Warning>
+   <CheckUseSettingsFile>false</CheckUseSettingsFile>
+   <CheckAllowSettingsChanges>false</CheckAllowSettingsChanges>
+   <CheckAlternateSource>false</CheckAlternateSource>
+   <CheckActiveDirectoryAuth>false</CheckActiveDirectoryAuth>
+   <CheckPasswordResetTool>false</CheckPasswordResetTool>
+   <CheckApplicationServer>true</CheckApplicationServer>
+   <ForceInstallModules>false</ForceInstallModules>
+   <CheckEmailServerRequireAuthentication>false</CheckEmailServerRequireAuthentication>
+   <CheckUseSSL>false</CheckUseSSL>
+   <CheckUseImplicitSSL>false</CheckUseImplicitSSL>
+   <CheckRunServiceHostManagerWatcher>true</CheckRunServiceHostManagerWatcher>
+   <SkipDatabaseConnectionTesting>false</SkipDatabaseConnectionTesting>
+   <AllowDynamicCompressionWarning>false</AllowDynamicCompressionWarning>
+   <CheckInstallServerOfflineMode>false</CheckInstallServerOfflineMode>
+   <CheckSpecifyServiceAccount>false</CheckSpecifyServiceAccount>
+   <CheckBetaModules>true</CheckBetaModules>
+   <UseTimeZoneTranslation>false</UseTimeZoneTranslation>
+   <TxtDestFolder>C:\Program Files\Decisions</TxtDestFolder>
+   <TxtBaseUrl>http://localhost/decisions</TxtBaseUrl>
+   <TxtDBServer>(local)</TxtDBServer>
+   <TxtMYSQLDBServer>127.0.0.1</TxtMYSQLDBServer>
+   <TxtDBDatabase>decisions</TxtDBDatabase>
+   <TxtUserID>sa</TxtUserID>
+   <TxtDBPassword>p@ssw0rd0!</TxtDBPassword>
+   <ClearSecondaryConnectionString>false</ClearSecondaryConnectionString>
+   <TxtAlternateURLSource>https://releases.decisions.com/releasedversions/60577</TxtAlternateURLSource>
+   <TxtAlternateDirectorySource>C:\vagrant\DecisionsInstaller\</TxtAlternateDirectorySource>
+   <TxtEmailServerPassword />
+   <TxtSite>Default Web Site</TxtSite>
+   <TxtApplicationPool>DefaultAppPool</TxtApplicationPool>
+   <ShowAzureOption>true</ShowAzureOption>
+   <TxtOraHost>127.0.0.1</TxtOraHost>
+   <TxtOraPort>1521</TxtOraPort>
+   <SuccessfullInstallationMessage>Decisions Application installed successfully</SuccessfullInstallationMessage>
+   <InstallerTitle>Decisions Installer</InstallerTitle>
+   <SplashScreenText>Decisions OS is Loading...</SplashScreenText>
+   <CompanyName>Decisions</CompanyName>
+   <InstalllationTypeTitle>The wizard guides you through installing, updating, and removing the Decisions Platform</InstalllationTypeTitle>
+   <ShowSelectModulePage>true</ShowSelectModulePage>
+   <ShowGatherSupportEmailPage>true</ShowGatherSupportEmailPage>
+   <InstallerLogoPath />
+   <AlternateInstallerSource>URL</AlternateInstallerSource>
+   <ServerType>Standard</ServerType>
+   <DataBaseType>MSSQL</DataBaseType>
+   <MsSQLAuthentication>SQLServerSecurity</MsSQLAuthentication>
+   <SQLConnectionType>Basic</SQLConnectionType>
+   <UseExistingDecisionServerAccount>true</UseExistingDecisionServerAccount>
+   <BypassEmailServer>true</BypassEmailServer>
+   <InstallSHMUsingLocalSystemAccount>true</InstallSHMUsingLocalSystemAccount>
+   <Modules />
+   <LicensedModules />
+   <WarnOnSystemValidationIssues xsi:nil="true" />
+   <IsSQLServer>true</IsSQLServer>
+   <RetiredModules />
+   <ShowEncryptionKeysPage>false</ShowEncryptionKeysPage>
+</WizardSetup>
