@@ -13,3 +13,4 @@ NOTES -
 Different Drive - If you want to have the Vagrant VM on a different drive letter run the 'VagrantBuilderConsole.exe d:' this will set it to d: drive. 
 
 
+v3 
