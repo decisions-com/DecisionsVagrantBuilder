@@ -4,7 +4,7 @@
 ; Specifies a Setup work flow, like INSTALL, UNINSTALL, or UPGRADE. This is a required parameter. 
 
 ACTION="Install"
-
+MRCACHEDIRECTORY=%temp%
 ; Specifies that SQL Server Setup should not display the privacy statement when ran from the command line. 
 
 SUPPRESSPRIVACYSTATEMENTNOTICE="False"
