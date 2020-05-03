@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -18,8 +18,5 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Security.Principal.Windows" Version="4.5.1" />
   </ItemGroup>
 </Project>

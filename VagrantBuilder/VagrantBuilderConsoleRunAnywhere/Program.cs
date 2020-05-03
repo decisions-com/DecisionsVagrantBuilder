@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Principal;
+//using System.Security.Principal;
 using VagrantBuilderCore.Classes;
 
 
@@ -13,18 +13,32 @@ namespace VagrantBuilderConsoleRunAnywhere
     {
         static void Main(string[] args)
         {
-
-            RequireAdministrator();
+           // System.Threading.Thread.Sleep(30000);
+            string buildNumber = null;
+            bool automated = false;
+            string forcedpath = "";
+            //RequireAdministrator();
             try
             {
 
 
                 try
                 {
-                    if (args[0].Contains(':'))
+                    if (args[0].Contains("Rundeck:"))
+                    {
+                        automated = true;
+                        buildNumber = args[0].Split(':').ElementAt(1);
+                        forcedpath = args[0].Split(':').ElementAt(2);
+                        forcedpath = forcedpath.Replace("'", string.Empty);
+                    }
+                    //JSON needed. 
+                    
+
+                    else if (args[0].Contains(':'))
                     {
                         System.IO.File.WriteAllText("vagrantDrive.config", args[0]);
                     }
+                     
 
                 }
                 catch
@@ -33,6 +47,7 @@ namespace VagrantBuilderConsoleRunAnywhere
 
                 }
 
+                
 
                 var xmlasstringPublic = new VagrantBuilderCore.VagrantBuilderClass().GetReleases("https://releases.decisions.com/releasedversions/PublicReleases.xml");
                 var xmlasstringStaged = new VagrantBuilderCore.VagrantBuilderClass().GetReleases("http://releases.decisions.com/stagedversions/StagedReleases.xml");
@@ -63,7 +78,11 @@ namespace VagrantBuilderConsoleRunAnywhere
 
 
                 Console.WriteLine("Which Build Number?? (note we support Staged versions too, type 'S' for staged Listing)");
-                string buildNumber = Console.ReadLine();
+                if (automated == false)
+                {
+                    buildNumber = Console.ReadLine();
+                }
+                
 
                 if (buildNumber.Equals("S"))
                 {
@@ -82,7 +101,11 @@ namespace VagrantBuilderConsoleRunAnywhere
                         }
                     }
                     Console.WriteLine("Which Build Number??");
-                    buildNumber = Console.ReadLine();
+
+                    
+                   
+                        
+                
                 }
 
 
@@ -105,11 +128,11 @@ namespace VagrantBuilderConsoleRunAnywhere
 
                     if (BuildItemToCreate.IsPublicallyReleased == true)
                     {
-                        geturlworkd = new VagrantBuilderCore.VagrantBuilderClass().CheckHTTPURLExists("http://releases.decisions.com/releasedversions/" + buildNumber);
+                        geturlworkd = new VagrantBuilderCore.VagrantBuilderClass().CheckHTTPURLExists("https://releases.decisions.com/releasedversions/" + buildNumber);
                     }
                     else
                     {
-                        geturlworkd = new VagrantBuilderCore.VagrantBuilderClass().CheckHTTPURLExists("http://releases.decisions.com/stagedversions/" + buildNumber);
+                        geturlworkd = new VagrantBuilderCore.VagrantBuilderClass().CheckHTTPURLExists("https://releases.decisions.com/stagedversions/" + buildNumber);
                     }
 
 
@@ -130,8 +153,9 @@ namespace VagrantBuilderConsoleRunAnywhere
                                     driveid = "c:";
                                 }
                             }
-
-                            var makeddir = new VagrantBuilderCore.VagrantBuilderClass().MakeDir(buildNumber, driveid);
+                            Console.WriteLine(buildNumber);
+                            Console.WriteLine(driveid);
+                            var makeddir = new VagrantBuilderCore.VagrantBuilderClass().MakeDir(buildNumber, driveid, forcedpath);
                             new VagrantBuilderCore.VagrantBuilderClass().CloneBaseFIles(makeddir);
                             new VagrantBuilderCore.VagrantBuilderClass().UpdateDownloadStringInDecisionsAutoInstaller(makeddir, BuildItemToCreate);
 
@@ -158,7 +182,7 @@ namespace VagrantBuilderConsoleRunAnywhere
                         }
                         else
                         {//linux / mac option
-                            var makeddir2 = new VagrantBuilderCore.VagrantBuilderClass().MakeDir(buildNumber, "c");
+                            var makeddir2 = new VagrantBuilderCore.VagrantBuilderClass().MakeDir(buildNumber, "c:", forcedpath);
                             new VagrantBuilderCore.VagrantBuilderClass().CloneBaseFIles(makeddir2);
                             new VagrantBuilderCore.VagrantBuilderClass().UpdateDownloadStringInDecisionsAutoInstaller(makeddir2, BuildItemToCreate);
 
@@ -171,9 +195,11 @@ namespace VagrantBuilderConsoleRunAnywhere
                     }
 
                 }
-                catch
+                catch (Exception ex2)
                 {
                     Console.WriteLine("Build Doesnt Exist..");
+                    Console.WriteLine(ex2.Message);
+                    Console.WriteLine(ex2.StackTrace);
                 }
 
 
@@ -202,31 +228,31 @@ namespace VagrantBuilderConsoleRunAnywhere
         /// <summary>
         /// Asks for administrator privileges upgrade if the platform supports it, otherwise does nothing
         /// </summary>
-        public static void RequireAdministrator()
-        {
-            string name = System.AppDomain.CurrentDomain.FriendlyName;
-            try
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
-                    {
-                        WindowsPrincipal principal = new WindowsPrincipal(identity);
-                        if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
-                        {
-                            throw new InvalidOperationException($"Application must be run as administrator. Right click the {name} file and select 'run as administrator'.");
-                        }
-                    }
-                }
-                else if (getuid() != 0)
-                {
-                    throw new InvalidOperationException($"Application must be run as root/sudo. From terminal, run the executable as 'sudo {name}'");
-                }
-            }
-            catch (Exception ex)
-            {
-                //throw new ApplicationException("Unable to determine administrator or root status", ex);
-            }
-        }
+        ////public static void RequireAdministrator()
+        //{
+        //    string name = System.AppDomain.CurrentDomain.FriendlyName;
+        //    try
+        //    {
+        //        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        //        {
+        //            using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+        //            {
+        //                WindowsPrincipal principal = new WindowsPrincipal(identity);
+        //                if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+        //                {
+        //                    throw new InvalidOperationException($"Application must be run as administrator. Right click the {name} file and select 'run as administrator'.");
+        //                }
+        //            }
+        //        }
+        //        else if (getuid() != 0)
+        //        {
+        //            throw new InvalidOperationException($"Application must be run as root/sudo. From terminal, run the executable as 'sudo {name}'");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //throw new ApplicationException("Unable to determine administrator or root status", ex);
+        //    }
+        //}
     }
 }

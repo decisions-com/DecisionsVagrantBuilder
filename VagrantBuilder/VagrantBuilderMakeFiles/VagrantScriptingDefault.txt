@@ -1,0 +1,97 @@
+﻿config.vm.provision "Separate After", after: :each, type: "shell", inline:<<-SHELL
+  echo '=============================='
+  get-date
+  SHELL
+  config.vm.provision "Separate Before", before: :each, type: "shell", inline:<<-SHELL
+  echo '++++++++++++++++++++++++++++++'
+  get-date
+  SHELL
+  # View the documentation for the provider you are using for more
+  # information on available options.
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+   config.vm.provision "shell", inline: <<-SHELL
+ECHO "Enabling IIS"
+DISM /online /Enable-Feature /FeatureName:"NetFx4Extended-ASPNET45"
+DISM /online /Enable-Feature /FeatureName:IIS-ASPNET45 /All
+DISM /online /Enable-Feature /FeatureName:"IIS-HttpCompressionDynamic"
+SHELL
+
+config.vm.provision "shell", inline: <<-SHELL
+ECHO "Downloading Archive"
+
+mkdir c:\\install
+(New-Object Net.WebClient).DownloadFile("https://github.com/decisions-com/DecisionsVagrantBuilder/blob/master/VagrantBuilder/VagrantBuilderConsoleRunAnywhere/Content/Archive.zip?raw=true" , "C:\\install\\Archive.zip")
+Expand-Archive -LiteralPath C:\\install\\archive.Zip -DestinationPath C:\\install\\Archive
+ECHO "Downloading SQL"
+(New-Object Net.WebClient).DownloadFile("https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLEXPR_x64_ENU.exe?WT.mc_id=-blog-scottha" , "C:\\install\\sql2017express.exe")
+
+SHELL
+
+config.vm.provision "shell", inline: <<-SHELL
+ECHO "Extracting SQL"
+mkdir C:\\SQLUpdates
+mkdir c:\\mssql
+
+(New-Object Net.WebClient).DownloadFile("https://raw.githubusercontent.com/decisions-com/DecisionsVagrantBuilder/master/VagrantBuilder/defaultsql" , "C:\\install\\ConfigurationFile.ini")
+(New-Object Net.WebClient).DownloadFile("https://raw.githubusercontent.com/decisions-com/DecisionsVagrantBuilder/master/VagrantBuilder/decdefault" , "C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml")
+
+$msbuild = "C:\\install\\sql2017express.exe"
+$arguments = "/x:c:\\install\\sql /q"
+start-process $msbuild $arguments -wait -NoNewWindow
+SHELL
+
+config.vm.provision "shell", inline: <<-SHELL
+ECHO "Installing SQL"
+
+Add-Type -AssemblyName 'System.Web'
+$minLength = 8 ## characters
+$maxLength = 12 ## characters
+$length = Get-Random -Minimum $minLength -Maximum $maxLength
+
+$password = [System.Web.Security.Membership]::GeneratePassword($length, 0)
+$password = $password.Replace(',', 'F');
+$password = $password.Replace(';', 'k');
+$password = $password.Replace('"', 'Y');
+$password = $password.Replace(':', 'I');
+$password = $password.Replace('@', 'B');
+$password = $password.Replace('&', 'V');
+$password = $password.Replace('<', 'Y');
+$password = $password.Replace('>', '8');
+
+((Get-Content -path C:\\install\\ConfigurationFile.ini -Raw) -replace 'p@ssw0rd0!',$password) | Set-Content -Path C:\\install\\ConfigurationFile.ini
+
+((Get-Content -path C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml -Raw) -replace 'p@ssw0rd0!',$password) | Set-Content -Path C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml
+
+
+$msbuild = "C:\\install\\sql\\SETUP.EXE"
+$arguments = "/ConfigurationFile=C:\\install\\ConfigurationFile.ini"
+start-process $msbuild $arguments -wait 
+ECHO "Finished SQL"
+SHELL
+
+config.vm.provision "shell", inline: <<-SHELL
+ECHO "Installing Decisions"
+
+
+$msbuild = "C:\\install\\Archive\\DecisionsInstaller\\DecisionsInstaller.exe"
+
+((Get-Content -path C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml -Raw) -replace '<TxtAlternateURLSource>https://releases.decisions.com/releasedversions/60577</TxtAlternateURLSource>','<TxtAlternateURLSource>https://releases.decisions.com/releasedversions/$$DecisionsVersion$$</TxtAlternateURLSource>') | Set-Content -Path C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml
+((Get-Content -path C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml -Raw) -replace '<TxtBaseUrl>http://localhost/decisions</TxtBaseUrl>','<TxtBaseUrl>$$BaseURL$$</TxtBaseUrl>') | Set-Content -Path C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml
+((Get-Content -path C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml -Raw) -replace '<InstallOnRoot>false</InstallOnRoot>','<InstallOnRoot>$$BaseRoot$$</InstallOnRoot>') | Set-Content -Path C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml
+
+$arguments = "C:\\install\\Archive\\DecisionsInstaller\\InstallerSetup.xml"
+start-process $msbuild $arguments -wait 
+SHELL
+
+
+#config.vm.provision "shell", inline: <<-SHELL
+#
+#ECHO "Finished Decisions Installation"
+#ECHO "IP ADDRESS is "
+#Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Microsoft\\Internet Explorer\\Main" -Name "DisableFirstRunCustomize" -Value 2
+#ECHO (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
+#SHELL
+end

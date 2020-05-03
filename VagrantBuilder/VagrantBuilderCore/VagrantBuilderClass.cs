@@ -43,7 +43,7 @@ namespace VagrantBuilderCore
             return _BuildList;
         }
 
-        public string MakeDir (string BuildNumber, string DriveLetter)
+        public string MakeDir (string BuildNumber, string DriveLetter, string ForcedPathToBuild)
         {
             if (string.IsNullOrEmpty(DriveLetter))
             {
@@ -62,26 +62,36 @@ namespace VagrantBuilderCore
             if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 defaultroot = DriveLetter + @"\Vagrant\Decisions";
+               
             }
             else
             {
                 defaultroot = DriveLetter + @"Vagrant/Decisions";
             }
+            
+            
+                var pathtoBuild = defaultroot + BuildNumber;
 
-            var pathtoBuild = defaultroot + BuildNumber;
-            var exists = Directory.Exists(pathtoBuild);
-            if (exists == true)
-            {
-                DateTime date = DateTime.Now;
-                var newpathtobuild = pathtoBuild+" DUPE "+ date.Month + date.Day + date.Second + date.Millisecond;
-                Directory.CreateDirectory(newpathtobuild);
-                return newpathtobuild;
-            }
-            else
-            {
-                Directory.CreateDirectory(pathtoBuild);
-                return pathtoBuild;
-            }
+                if (ForcedPathToBuild.Length > 1)
+                {
+                     pathtoBuild = defaultroot + @"\" + ForcedPathToBuild;
+                }
+
+                var exists = Directory.Exists(pathtoBuild);
+                if (exists == true)
+                {
+                    DateTime date = DateTime.Now;
+                    var newpathtobuild = pathtoBuild + " DUPE " + date.Month + date.Day + date.Second + date.Millisecond;
+                    Directory.CreateDirectory(newpathtobuild);
+                    return newpathtobuild;
+                }
+                else
+                {
+                    Directory.CreateDirectory(pathtoBuild);
+                    return pathtoBuild;
+                }
+            
+            
             
         }
 
