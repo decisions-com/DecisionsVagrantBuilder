@@ -18,7 +18,7 @@ namespace VagrantBuilderMakeFiles
 
                 var spec = new HyperVHostingSpecific() { CPU = CPU, RAM = RAMinGig, VMName = customerName + "-" + InstanceName, BaseURL = BaseURL, DecisionsVersion = DecisionsVersion };
 
-                if (!spec.BaseURL.StartsWith("http"))
+                if (!spec.BaseURL.Contains("http"))
                 {
                     Console.WriteLine("Base URL needs to be a URL");
                     throw new Exception("Base URL needs to be a URL");
