@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using HtmlAgilityPack;
 using VagrantBuilderCore.Classes;
 
 
@@ -98,7 +99,8 @@ namespace VagrantBuilderCore
             }
             //zippedfiles = zippedfiles.Replace("Console", string.Empty);
             var exists = System.IO.File.Exists(zippedfiles);
-            System.IO.Compression.ZipFile.ExtractToDirectory(zippedfiles, unzipToPath);
+            var foldertoUnzipInto = Directory.GetCurrentDirectory()+ "/" + unzipToPath;
+            System.IO.Compression.ZipFile.ExtractToDirectory(zippedfiles, foldertoUnzipInto);
 
         }
 
@@ -115,6 +117,114 @@ namespace VagrantBuilderCore
                 throw;
             }
         }
+
+        public bool DownloadWebFolderForInstallation(string URL, string BuildVersion, string file, string path)
+        {
+            try
+            {
+                WebClient client = new WebClient();
+                Console.WriteLine("downloading... "+ file);
+                var curpath = Directory.GetCurrentDirectory();
+                var fullpath = curpath + "/Cache/" + BuildVersion + "/" + file;
+                var doesfolderexist = System.IO.Directory.Exists(fullpath);
+                if (doesfolderexist==false)
+                {
+                    System.IO.Directory.CreateDirectory(curpath + "/Cache/" + BuildVersion);
+                }
+                client.DownloadFile( URL + "\\" + file, fullpath );
+                return true;
+            }
+            catch (System.Exception)
+            {
+                
+                return false;
+            }
+        }
+
+        public bool DownloadDotNetFramework(string BuildNumber, string Version, string path)
+        {
+            var file = "";
+            var urldownload = "";
+            if (Version == "4.8");
+            {
+            file = "ndp48-x86-x64-allos-enu.exe";
+            urldownload = "https://go.microsoft.com/fwlink/?linkid=2088631";
+            }
+            var curpath = Directory.GetCurrentDirectory();
+            var fullpath = curpath + "/Cache/" + BuildNumber + "/" + file;
+            var doeslocalfileexists = System.IO.File.Exists(fullpath);
+            if(doeslocalfileexists == true)
+            {
+                Console.WriteLine("Local Cache Exists...for " + file + " using this instead");
+                
+            }
+            else
+            {
+                WebClient wc = new WebClient();
+                wc.DownloadFile(urldownload, fullpath);
+                doeslocalfileexists = true;
+            }
+            var topath =  curpath + "/" + path + "/DecisionsInstaller/" + file;
+            System.IO.File.Copy(fullpath,topath, true);
+            return doeslocalfileexists;
+
+        }
+
+        public bool GetAllLinksOnInstallationPageAndDownload (string URL, string BuildNumber, string path)
+        {
+            HtmlWeb hw = new HtmlWeb();
+            HtmlDocument doc = hw.Load(URL);
+            foreach(HtmlNode link in doc.DocumentNode.SelectNodes("//a[@href]"))
+            {
+               if( link.InnerHtml.StartsWith("All")   )
+               {
+                    continue;
+               }
+               if( link.InnerHtml.StartsWith("["))
+               {
+                   continue;
+               }
+
+               {
+                   var f = CheckIfExistsInLocalCache(URL, BuildNumber, link.InnerHtml, path);
+                   if (f ==false)
+                   {
+                       DownloadWebFolderForInstallation(URL, BuildNumber, link.InnerHtml, path);
+                       
+                   }     
+                        var curpath = Directory.GetCurrentDirectory();
+                        var fullpath = curpath + "/Cache/" + BuildNumber + "/" + link.InnerHtml;
+                        var topath =  curpath + "/" + path + "/DecisionsInstaller/" + link.InnerHtml;
+                        System.IO.File.Copy(fullpath,topath, true);
+                   
+
+               }
+            }
+
+            
+
+            return false;
+        }
+
+        public bool CheckIfExistsInLocalCache (string URL, string BuildNumber, string link, string path)
+        {
+            try
+            {
+                var curpath = Directory.GetCurrentDirectory();
+                var fullpath = curpath + "/Cache/" + BuildNumber + "/" + link;
+                var doeslocalfileexists = System.IO.File.Exists(fullpath);
+                if(doeslocalfileexists == true)
+                {
+                    Console.WriteLine("Local Cache Exists...for " + link + " using this instead");
+                }
+                return doeslocalfileexists;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
+        }
+
 
         public bool UpdateDownloadStringInDecisionsAutoInstaller(string PathToRootOfBuildFolder, BuildListBuild BuildNumber)
         {

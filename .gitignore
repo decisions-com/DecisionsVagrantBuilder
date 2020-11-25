@@ -328,3 +328,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+VagrantBuilder/.DS_Store
+VagrantBuilder/VagrantBuilderConsoleRunAnywhere/Content/.DS_Store

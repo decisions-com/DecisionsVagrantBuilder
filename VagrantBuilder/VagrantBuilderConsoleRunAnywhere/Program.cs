@@ -13,7 +13,7 @@ namespace VagrantBuilderConsoleRunAnywhere
     {
         static void Main(string[] args)
         {
-
+            
             RequireAdministrator();
             try
             {
@@ -102,14 +102,16 @@ namespace VagrantBuilderConsoleRunAnywhere
                     {
                         BuildItemToCreate = ListBuilds.Where(x => x.SVNRevision == buildNumber).ToList().First();
                     }
-
+                    var downloadurl = "";
                     if (BuildItemToCreate.IsPublicallyReleased == true)
                     {
-                        geturlworkd = new VagrantBuilderCore.VagrantBuilderClass().CheckHTTPURLExists("http://releases.decisions.com/releasedversions/" + buildNumber);
+                        downloadurl = "https://releases.decisions.com/releasedversions/" + buildNumber;
+                        geturlworkd = new VagrantBuilderCore.VagrantBuilderClass().CheckHTTPURLExists(downloadurl);
                     }
                     else
                     {
-                        geturlworkd = new VagrantBuilderCore.VagrantBuilderClass().CheckHTTPURLExists("http://releases.decisions.com/stagedversions/" + buildNumber);
+                        downloadurl = "https://releases.decisions.com/stagedversions/" + buildNumber;
+                        geturlworkd = new VagrantBuilderCore.VagrantBuilderClass().CheckHTTPURLExists(downloadurl);
                     }
 
 
@@ -130,10 +132,12 @@ namespace VagrantBuilderConsoleRunAnywhere
                                     driveid = "c:";
                                 }
                             }
-
                             var makeddir = new VagrantBuilderCore.VagrantBuilderClass().MakeDir(buildNumber, driveid);
-                            new VagrantBuilderCore.VagrantBuilderClass().CloneBaseFIles(makeddir);
-                            new VagrantBuilderCore.VagrantBuilderClass().UpdateDownloadStringInDecisionsAutoInstaller(makeddir, BuildItemToCreate);
+                            DownloadExtact(buildNumber, driveid, downloadurl, BuildItemToCreate, makeddir);
+
+                            
+                            
+                            
 
 
                             Console.WriteLine("-----");
@@ -158,9 +162,9 @@ namespace VagrantBuilderConsoleRunAnywhere
                         }
                         else
                         {//linux / mac option
-                            var makeddir2 = new VagrantBuilderCore.VagrantBuilderClass().MakeDir(buildNumber, "c");
-                            new VagrantBuilderCore.VagrantBuilderClass().CloneBaseFIles(makeddir2);
-                            new VagrantBuilderCore.VagrantBuilderClass().UpdateDownloadStringInDecisionsAutoInstaller(makeddir2, BuildItemToCreate);
+                            var makeddir = new VagrantBuilderCore.VagrantBuilderClass().MakeDir(buildNumber, "c");
+                            DownloadExtact(buildNumber, "c", downloadurl, BuildItemToCreate, makeddir );
+                        
 
                         }
                     }
@@ -202,6 +206,17 @@ namespace VagrantBuilderConsoleRunAnywhere
         /// <summary>
         /// Asks for administrator privileges upgrade if the platform supports it, otherwise does nothing
         /// </summary>
+
+
+        public static bool DownloadExtact (string buildNumber, string driveid, string downloadurl, BuildListBuild  BuildItemToCreate, string makeddir)
+        {
+            
+            new VagrantBuilderCore.VagrantBuilderClass().CloneBaseFIles(makeddir);
+            new VagrantBuilderCore.VagrantBuilderClass().GetAllLinksOnInstallationPageAndDownload(downloadurl, buildNumber, makeddir);
+            new VagrantBuilderCore.VagrantBuilderClass().DownloadDotNetFramework(buildNumber, "4.8", makeddir);
+            new VagrantBuilderCore.VagrantBuilderClass().UpdateDownloadStringInDecisionsAutoInstaller(makeddir, BuildItemToCreate);
+            return true; 
+        }
         public static void RequireAdministrator()
         {
             string name = System.AppDomain.CurrentDomain.FriendlyName;
