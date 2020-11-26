@@ -99,8 +99,17 @@ namespace VagrantBuilderCore
             }
             //zippedfiles = zippedfiles.Replace("Console", string.Empty);
             var exists = System.IO.File.Exists(zippedfiles);
-            var foldertoUnzipInto = Directory.GetCurrentDirectory()+ "/" + unzipToPath;
-            System.IO.Compression.ZipFile.ExtractToDirectory(zippedfiles, foldertoUnzipInto);
+            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var foldertoUnzipInto =  unzipToPath;
+                System.IO.Compression.ZipFile.ExtractToDirectory(zippedfiles, foldertoUnzipInto);
+            }
+            else
+            {
+                var foldertoUnzipInto = Directory.GetCurrentDirectory() + "/" + unzipToPath;
+                System.IO.Compression.ZipFile.ExtractToDirectory(zippedfiles, foldertoUnzipInto);
+            }
+                
 
         }
 
@@ -124,7 +133,16 @@ namespace VagrantBuilderCore
             {
                 WebClient client = new WebClient();
                 Console.WriteLine("downloading... "+ file);
-                var curpath = Directory.GetCurrentDirectory();
+                var curpath = "";
+                if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    curpath = "c:";
+                }
+                else
+                {
+                    curpath = Directory.GetCurrentDirectory();
+                }
+                     
                 var fullpath = curpath + "/Cache/" + BuildVersion + "/" + file;
                 var doesfolderexist = System.IO.Directory.Exists(fullpath);
                 if (doesfolderexist==false)
@@ -150,8 +168,20 @@ namespace VagrantBuilderCore
             file = "ndp48-x86-x64-allos-enu.exe";
             urldownload = "https://go.microsoft.com/fwlink/?linkid=2088631";
             }
-            var curpath = Directory.GetCurrentDirectory();
-            var fullpath = curpath + "/Cache/" + BuildNumber + "/" + file;
+            var curpath = "";
+            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                curpath = "c:";
+
+            }
+            else
+
+            {
+                curpath = Directory.GetCurrentDirectory();
+
+            }
+           
+            var fullpath = curpath + "/Cache/" +  file;
             var doeslocalfileexists = System.IO.File.Exists(fullpath);
             if(doeslocalfileexists == true)
             {
@@ -160,11 +190,23 @@ namespace VagrantBuilderCore
             }
             else
             {
+                Console.WriteLine("Downloading " + file  );
                 WebClient wc = new WebClient();
                 wc.DownloadFile(urldownload, fullpath);
                 doeslocalfileexists = true;
             }
-            var topath =  curpath + "/" + path + "/DecisionsInstaller/" + file;
+            var topath = "";
+            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                topath =  path + "/DecisionsInstaller/" + file;
+
+            }
+            else
+            {
+                topath = curpath + "/" + path + "/DecisionsInstaller/" + file;
+
+            }
+
             System.IO.File.Copy(fullpath,topath, true);
             return doeslocalfileexists;
 
@@ -191,10 +233,30 @@ namespace VagrantBuilderCore
                    {
                        DownloadWebFolderForInstallation(URL, BuildNumber, link.InnerHtml, path);
                        
-                   }     
-                        var curpath = Directory.GetCurrentDirectory();
-                        var fullpath = curpath + "/Cache/" + BuildNumber + "/" + link.InnerHtml;
-                        var topath =  curpath + "/" + path + "/DecisionsInstaller/" + link.InnerHtml;
+                   }
+                    var curpath = "";
+                    if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        curpath = "c:";
+
+                    }
+                    else
+
+                    { 
+                        curpath = Directory.GetCurrentDirectory();
+
+                    }
+                    var fullpath = curpath + "/Cache/" + BuildNumber + "/" + link.InnerHtml;
+                    var topath = "";
+                    if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                         topath =  path + "/DecisionsInstaller/" + link.InnerHtml;
+                    }
+                    else
+                    {
+                         topath = curpath + "/" + path + "/DecisionsInstaller/" + link.InnerHtml;
+                    }
+                        
                         System.IO.File.Copy(fullpath,topath, true);
                    
 
@@ -210,7 +272,16 @@ namespace VagrantBuilderCore
         {
             try
             {
-                var curpath = Directory.GetCurrentDirectory();
+                var curpath = "";
+                if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                     curpath = "c:";
+                }
+                else
+                {
+                     curpath = Directory.GetCurrentDirectory();
+                }
+                    
                 var fullpath = curpath + "/Cache/" + BuildNumber + "/" + link;
                 var doeslocalfileexists = System.IO.File.Exists(fullpath);
                 if(doeslocalfileexists == true)

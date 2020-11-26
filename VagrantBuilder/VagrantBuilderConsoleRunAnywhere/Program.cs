@@ -145,7 +145,8 @@ namespace VagrantBuilderConsoleRunAnywhere
                             Console.WriteLine("-----");
                             Console.WriteLine("IN CMD (Run as Administrator)");
                             Console.WriteLine("CD " + makeddir);
-                            Console.WriteLine("vagrant up --provider hyperv");
+                            Console.WriteLine("IF VIRTUAL BOX THEN 'vagrant up'");
+                            Console.WriteLine("IF HyperV 'vagrant up --provider hyperv'");
 
                             var proc1 = new ProcessStartInfo();
                             string anyCommand;
