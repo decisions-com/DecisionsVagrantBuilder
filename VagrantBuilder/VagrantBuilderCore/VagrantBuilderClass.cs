@@ -226,6 +226,10 @@ namespace VagrantBuilderCore
                {
                    continue;
                }
+               if( link.InnerHtml.EndsWith(".partial"))
+               {
+                   continue;
+               }
 
                {
                    var f = CheckIfExistsInLocalCache(URL, BuildNumber, link.InnerHtml, path);
